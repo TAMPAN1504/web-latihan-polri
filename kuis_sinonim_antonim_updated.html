@@ -121,11 +121,27 @@
     .submit-btn:hover {
       background-color: darkgreen;
     }
+    .btn{
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .nav-btn{
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div id="quiz"></div>
+    <div class="nav-btn">
+      <button class="btn" id="prev-btn">Prev</button>
+      <button class="btn" id="next-btn">Next</button>
+    </div>
     <div class="navigation" id="navigation"></div>
     <button class="submit-btn" onclick="submitQuiz()">Selesai</button>
     <div class="result" id="result"></div>
@@ -218,112 +234,139 @@
 
 
 ];
+let shuffledQuestions = [];
+let currentQuestionIndex = 0;
+let answers = [];
 
-    let shuffledQuestions = [];
-    let currentQuestion = 0;
-    let answers = [];
+const quiz = document.getElementById("quiz");
+const nextButton = document.getElementById("next-btn");
+const prevButton = document.getElementById("prev-btn");
 
-    function shuffleArray(array) {
-      return array
-        .map(item => ({ item, sort: Math.random() }))
-        .sort((a, b) => a.sort - b.sort)
-        .map(({ item }) => item);
+function shuffleArray(array) {
+  return array
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+}
+
+function initQuiz() {
+  shuffledQuestions = shuffleArray(originalQuestions).map(q => ({
+    ...q,
+    options: shuffleArray(q.options)
+  }));
+  answers = Array(shuffledQuestions.length).fill(null);
+  currentQuestionIndex = 0;
+  renderQuestion(currentQuestionIndex);
+  renderNavigation();
+  updateNavButtons();
+}
+
+function renderQuestion(index) {
+  const q = shuffledQuestions[index];
+  quiz.innerHTML = `
+    <div class="question-box">
+      <h3>Soal ${index + 1} dari ${shuffledQuestions.length}</h3>
+      <p><strong>${q.question}</strong></p>
+      <form>
+        ${q.options
+          .map((opt, i) => `
+          <label class="option">
+            <input type="radio" name="option" value="${opt}" onchange="selectAnswer(${index}, '${opt}')" 
+            ${answers[index] === opt ? "checked" : ""} />
+            ${String.fromCharCode(97 + i)}. ${opt}
+          </label>
+        `).join("")}
+      </form>
+    </div>
+  `;
+  highlightCurrent(index);
+}
+
+function renderNavigation() {
+  const nav = document.getElementById("navigation");
+  nav.innerHTML = "";
+  for (let i = 0; i < shuffledQuestions.length; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i + 1;
+    btn.className = answers[i] ? "answered" : "";
+    if (i === currentQuestionIndex) btn.classList.add("active");
+    btn.onclick = () => {
+      currentQuestionIndex = i;
+      renderQuestion(i);
+      updateNavButtons();
+    };
+    nav.appendChild(btn);
+  }
+}
+
+function highlightCurrent(index) {
+  const navButtons = document.getElementById("navigation").children;
+  for (let i = 0; i < navButtons.length; i++) {
+    navButtons[i].classList.remove("active");
+    if (answers[i]) {
+      navButtons[i].classList.add("answered");
+    } else {
+      navButtons[i].classList.remove("answered");
     }
+  }
+  if (navButtons[index]) {
+    navButtons[index].classList.add("active");
+  }
+}
 
-    function initQuiz() {
-      shuffledQuestions = shuffleArray(originalQuestions).map(q => ({
-        ...q,
-        options: shuffleArray(q.options)
-      }));
-      answers = Array(shuffledQuestions.length).fill(null);
-      renderQuestion(currentQuestion);
-      renderNavigation();
-    }
+function selectAnswer(qIndex, selected) {
+  answers[qIndex] = selected;
+  highlightCurrent(qIndex);
+}
 
-    function renderQuestion(index) {
-      const quiz = document.getElementById("quiz");
-      const q = shuffledQuestions[index];
-      quiz.innerHTML = `
-        <div class="question-box">
-          <h3>Soal ${index + 1} dari ${shuffledQuestions.length}</h3>
-          <p><strong>${q.question}</strong></p>
-          <form>
-            ${q.options
-              .map((opt, i) => `
-              <label class="option">
-                <input type="radio" name="option" value="${opt}" onchange="selectAnswer(${index}, '${opt}')" 
-                ${answers[index] === opt ? "checked" : ""} />
-                ${String.fromCharCode(97 + i)}. ${opt}
-              </label>
-            `).join("")}
-          </form>
-        </div>
-      `;
-      highlightCurrent(index);
-    }
+nextButton.addEventListener("click", () => {
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
 
-    function renderNavigation() {
-      const nav = document.getElementById("navigation");
-      nav.innerHTML = "";
-      for (let i = 0; i < shuffledQuestions.length; i++) {
-        const btn = document.createElement("button");
-        btn.innerText = i + 1;
-        btn.className = answers[i] ? "answered" : "";
-        if (i === currentQuestion) btn.classList.add("active");
-        btn.onclick = () => {
-          currentQuestion = i;
-          renderQuestion(i);
-        };
-        nav.appendChild(btn);
-      }
-    }
+prevButton.addEventListener("click", () => {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
 
-    function highlightCurrent(index) {
-      const navButtons = document.getElementById("navigation").children;
-      for (let i = 0; i < navButtons.length; i++) {
-        navButtons[i].classList.remove("active");
-        if (answers[i]) {
-          navButtons[i].classList.add("answered");
-        } else {
-          navButtons[i].classList.remove("answered");
-        }
-      }
-      if (navButtons[index]) {
-        navButtons[index].classList.add("active");
-      }
-    }
+function updateNavButtons() {
+  prevButton.disabled = currentQuestionIndex === 0;
+  nextButton.disabled = currentQuestionIndex === shuffledQuestions.length - 1;
+}
 
-    function selectAnswer(qIndex, selected) {
-      answers[qIndex] = selected;
-      highlightCurrent(qIndex);
-    }
+function submitQuiz() {
+  let score = 0;
+  const result = document.getElementById("result");
+  result.innerHTML = "<h2>Hasil Kuis:</h2>";
+  result.innerHTML += `<a href="index.html" class="btn">HOME</a>`;
+  
+  shuffledQuestions.forEach((q, i) => {
+    const isCorrect = answers[i] === q.answer;
+    if (isCorrect) score++;
 
-    function submitQuiz() {
-      let score = 0;
-      const result = document.getElementById("result");
-      result.innerHTML = "<h2>Hasil Kuis:</h2>";
-      result.innerHTML = `<a href="index.html" class="btn">HOME</a>`
-      
-      shuffledQuestions.forEach((q, i) => {
-        const isCorrect = answers[i] === q.answer;
-        if (isCorrect) score++;
+    result.innerHTML += `
+      <div class="question-box">
+        <p><strong>${i + 1}. ${q.question}</strong></p>
+        <p>Jawaban Anda: <span class="${isCorrect ? "correct" : "incorrect"}">${answers[i] || "Belum dijawab"}</span></p>
+        <p>Jawaban Benar: <span class="correct">${q.answer}</span></p>
+      </div>
+    `;
+  });
 
-        result.innerHTML += `
-          <div class="question-box">
-            <p><strong>${i + 1}. ${q.question}</strong></p>
-            <p>Jawaban Anda: <span class="${isCorrect ? "correct" : "incorrect"}">${answers[i] || "Belum dijawab"}</span></p>
-            <p>Jawaban Benar: <span class="correct">${q.answer}</span></p>
-          </div>
-        `;
-      });
+  result.innerHTML = `<h2>Nilai Anda: ${score * 10}</h2>` + result.innerHTML;
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("navigation").style.display = "none";
+  document.querySelector(".submit-btn").style.display = "none";
+  document.querySelector(".nav-btns").style.display = "none";
+}
 
-      result.innerHTML = `<h2>Nilai Anda: ${score * 10}</h2>` + result.innerHTML;
-      document.getElementById("quiz").style.display = "none";
-      document.getElementById("navigation").style.display = "none";
-      document.querySelector(".submit-btn").style.display = "none";
-    }
-
-    window.onload = initQuiz;
+window.onload = initQuiz;
   </script>
 </body>
 </html>
