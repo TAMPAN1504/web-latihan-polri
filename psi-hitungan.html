@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Latihan Soal Antonim Sinonim</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eaf4ff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .question-box {
+      margin-bottom: 20px;
+    }
+
+    .question-box h3 {
+      margin-top: 0;
+      color: #007acc;
+    }
+
+    .question-box p {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .question-box form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      margin-top: 10px;
+    }
+
+    .option {
+      padding: 10px;
+      border: 2px solid #007acc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .option:hover {
+      background: #e0f0ff;
+    }
+
+    .option input {
+      margin-right: 10px;
+    }
+
+    .navigation {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .navigation button {
+      padding: 10px 15px;
+      background-color: #ccc;
+      color: black;
+      border: 2px solid #999;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .navigation button.answered {
+      background-color: #4CAF50; /* hijau */
+      color: white;
+      border-color: #3e8e41;
+    }
+
+    .navigation button.active {
+      outline: 2px solid #007acc;
+    }
+
+    .result {
+      margin-top: 30px;
+    }
+
+    .result h2 {
+      color: #007acc;
+    }
+
+    .result .question-box {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+    }
+
+    .submit-btn {
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background-color: darkgreen;
+    }
+    .btn{
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .nav-btn{
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="quiz"></div>
+    <div class="nav-btn">
+      <button class="btn" id="prev-btn">Prev</button>
+      <button class="btn" id="next-btn">Next</button>
+    </div>
+    <div class="navigation" id="navigation"></div>
+    <button class="submit-btn" onclick="submitQuiz()">Selesai</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+    {
+    question: "Sebuah olimpiade dengan 20 soal menerapkan poin +4 poin untuk soal benar, -1 jika salah dan 0 poin jika tidak menjawab. Jika Mulia mendapatkan poin 43 dan menjawab 5 soal salah, berapa soal yang tidak ia jawab...",
+    options: ["7 soal", "8 soal", "4 soal", "5 soal", "3 soal"],
+    answer: "3 soal"
+  },
+  {
+    question: "Kota P dan Q berjarak 760 km. Jika Budi mengendarai kendaraannya dengan kecepatan rata-rata 50 km/jam, berapa waktu yang dibutuhkan Budi untuk menempuh jarak tersebut...",
+    options: ["16 jam", "15 jam 20 menit", "17 jam 10 menit", "15 jam 12 menit", "12 jam 15 menit"],
+    answer: "15 jam 12 menit"
+  },
+  {
+    question: "Dania memiliki 10 baju lebih banyak Shely. Jika perbandingan baju mereka adalah 5 : 3, tentukan banyak baju yang dimili Dania...",
+    options: ["25 baju", "15 baju", "35 baju", "20 baju", "28 baju"],
+    answer: "25 baju"
+  },
+  {
+    question: "Sekumpulan anak ditanyakan tentang hobi mereka. Diketahui 10 orang suka renang, 12 suka basket, 5 orang suka keduanya. Jika 4 orang tidak suka keduanya, tentukan jumlah anak dalam kumpulan tersebut...",
+    options: ["31 orang", "21 orang", "30 orang", "19 orang", "26 orang"],
+    answer: "21 orang"
+  },
+  {
+    question: "Sebuah perusahaan memanggil 200 pelamar untuk melakukan tahap interview. Jika hanya 80% yang datang dan hanya 40% dari pelamar yang datang yang akan diterima, tentukan banyak pelamar yang diterima...",
+    options: ["79 orang", "48 orang", "80 orang", "55 orang", "64 orang"],
+    answer: "64 orang"
+  },
+  {
+    question: "Andin sering mengecek kesehatan giginya setiap 6 bulan sekali. Jika ia terakhir mengecek giginya di hari Selasa. Hari apalagi ia akan mengecek giginya...",
+    options: ["Minggu", "Selasa", "Rabu", "Jumat", "Sabtu"],
+    answer: "Minggu"
+  },
+  {
+    question: "Sebuah toko memberikan diskon 35%+20% untuk semua jenis sepatu. Jika sebuah sepatu memiliki harga Rp. 600,000, tentukan harga sepatu setelah didiskon...",
+    options: ["Rp. 312.000", "Rp. 272.500", "Rp. 300.500", "Rp. 260.000", "Rp. 324.000"],
+    answer: "Rp. 312.000"
+  },
+  {
+    question: "Sebuah Proyek dapat dikerjakan dalam waktu 75 hari oleh 20 pekerja. Pemiliki proyek itu ingin mempercepat waktunya dengan menambah 10 pekerja lagi. Tentukan berapa waktu yang dibutuhkan setelah pekerja ditambahkan...",
+    options: ["52 hari", "58 hari", "63 hari", "45 hari", "50 hari"],
+    answer: "50 hari"
+  },
+  {
+    question: "Sebuah acara seminar menyediakan 300 tiket yang akan dibagi sebagai berikut, 20% untuk VIP, 100 tiket untuk reguler, dan sisanya OTS. Tentukan banyak tiket OTS...",
+    options: ["120 tiket", "130 tiket", "140 tiket", "150 tiket", "160 tiket"],
+    answer: "140 tiket"
+  },
+  {
+    question: "Pak Danu adalah pedagang sayur. Ia membeli 1 ton kol seharga Rp. 9.000.000. Jika ia akan menjual kol tersebut dengan harga Rp. 12.000 per kg, tentukan keuntungan yang didapat Pak Danu ...",
+    options: ["Rp. 3.000.000", "Rp. 2.000.000", "Rp. 3.720.000", "Rp. 1.400.000", "Rp. 4.100.000"],
+    answer: "Rp. 3.000.000"
+  },
+  {
+    question: "Ayah membeli sebuah motor dengan harga Rp. 17.000.000. Jika ayah menjual kembali motor tersebut dan mendapat kerugian 20%, tentukan harga jual motor tersebut...",
+    options: ["Rp. 15.000.000", "Rp. 16.750.000", "Rp. 13.600.000", "Rp. 14.460.000", "Rp. 15.760.000"],
+    answer: "Rp. 13.600.000"
+  },
+  {
+    question: "Sebuah kecepatan kereta dapat mencapai 350 km/jam. Jika kota A dan kota B berjarak 770 km, tentukan waktu yang dibutuhkan kereta tersebut untuk menempuh jarak tersebut...",
+    options: ["2 jam 16 menit", "2 jam 20 menit", "2 jam 2 menit", "2 jam 22 menit", "2 jam 12 menit"],
+    answer: "2 jam 12 menit"
+  },
+  {
+    question: "Dude dapat membuat 20 origami dalam waktu 10 menit. Jika hari ini ia sudah membuat 60 origami, berapa waktu yang telah ia habiskan untuk membuat origami...",
+    options: ["20 menit", "1 jam", "50 menit", "30 menit", "40 menit"],
+    answer: "30 menit"
+  },
+  {
+    question: "Jika Sonya membeli tas seharga Rp. 400.000 kemudian ia jual kembali seharga Rp. 500.000, tentukan berapa persen keuntungan yang didapat Sonya...",
+    options: ["20%", "10%", "35%", "15%", "25%"],
+    answer: "25%"
+  },
+  {
+    question: "Bedu membeli 2 sepatu dan 4 sandal dengan harga Rp. 240.000. Tentukan harga sepatu jika diketahui harga sepatu 6 kali harga sandal...",
+    options: ["Rp. 60.000", "Rp. 720.000", "Rp. 90.000", "Rp. 84.000", "Rp. 108.000"],
+    answer: "Rp. 90.000"
+  },
+  {
+    question: "Sebuah bank memberikan 12% bunga tahunan untuk setiap nasabahnya. Jika Dina sudah menabung selama 5 bulan dengan nominal awal Rp. 5.000.000, tentukan uang Dina sekarang...",
+    options: ["Rp. 5.250.000", "Rp. 5.050.000", "Rp. 5.500.000", "Rp.5.025.000", "Rp.5.750.000"],
+    answer: "Rp. 5.250.000"
+  },
+  {
+    question: "Dona mengendarai motornya dengan kecepatan rata-rata 56 km/jam. Jika ia sudah berkendara selama 7 jam, tentukan berapa jauh jarak yang sudah ia tempuh...",
+    options: ["329 km", "380 km", "392 km", "292 km", "229 km"],
+    answer: "392 km"
+  },
+  {
+    question: "1 milenium - 100 lustrum - 2 abad + 170 tahun = ... Tahun",
+    options: ["570", "470", "370", "270", "670"],
+    answer: "470"
+  },
+  {
+    question: "Rata-rata dari 15. 10, 7 dan y adalah 9. Tentukan nilai y...",
+    options: ["2", "3", "4", "5", "6"],
+    answer: "4"
+  },
+  {
+    question: "17782 - 17772 = ...",
+    options: ["2555", "3455", "2455", "3555", "4555"],
+    answer: "3555"
+  },
+  {
+    question: "13 adalah hasil dari...",
+    options: ["13", "11", "19", "17", "14"],
+    answer: "13"
+  },
+  {
+    question: "29 - 1000 : 50 + 12 x (-2) + 50 x 2 = ....",
+    options: ["55", "76", "93", "85", "62"],
+    answer: "85"
+  },
+  {
+    question: "4 gross - 20 lusin - 12 kodi + 30 buah = ... buah",
+    options: ["210", "166", "153", "126", "112"],
+    answer: "126"
+  },
+  {
+    question: "12 adalah hasil dari...",
+    options: ["17", "19", "12", "22", "10"],
+    answer: "12"
+  },
+  {
+    question: "46 adalah berapa persen dari 115 ...",
+    options: ["60%", "50%", "20%", "40%", "30%"],
+    answer: "40%"
+  },
+  {
+    question: "17 windu - 6 dekade + 2 tahun = ...tahun",
+    options: ["78", "56", "67", "88", "48"],
+    answer: "78"
+  },
+  {
+    question: "48 adalah hasil dari...",
+    options: ["27", "76", "48", "39", "52"],
+    answer: "48"
+  },
+  {
+    question: "√27 + √12 + √3 = ...",
+    options: ["√3", "5√3", "8√3", "2√3", "6√3"],
+    answer: "6√3"
+  },
+  {
+    question: "21 adalah berapa persen dari 150 ...",
+    options: ["13%", "12%", "19%", "14%", "10%"],
+    answer: "14%"
+  },
+  {
+    question: "Hasil dari 2 - 1 = ...",
+    options: ["1", "2", "3", "4", "5"],
+    answer: "1"
+  },
+  {
+    question: "10 km - 500 dam + 100 m = ...m",
+    options: ["5.100", "510", "51.000", "51", "5,1"],
+    answer: "5.100"
+  },
+  {
+    question: "35 - 1000 : 25 + 5 x 12 = ...",
+    options: ["44", "55", "38", "29", "62"],
+    answer: "55"
+  },
+  {
+    question: "Rata-rata dari 10, p, 8, 5 dan 3 adalah 6. tentukan nilai p...",
+    options: ["4", "7", "8", "5", "11"],
+    answer: "4"
+  },
+  {
+    question: "20% dari 85 adalah ....",
+    options: ["16", "10", "17", "20", "21"],
+    answer: "17"
+  }
+
+
+
+
+];
+let shuffledQuestions = [];
+let currentQuestionIndex = 0;
+let answers = [];
+
+const quiz = document.getElementById("quiz");
+const nextButton = document.getElementById("next-btn");
+const prevButton = document.getElementById("prev-btn");
+
+function shuffleArray(array) {
+  return array
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+}
+
+function initQuiz() {
+  shuffledQuestions = shuffleArray(originalQuestions).map(q => ({
+    ...q,
+    options: shuffleArray(q.options)
+  }));
+  answers = Array(shuffledQuestions.length).fill(null);
+  currentQuestionIndex = 0;
+  renderQuestion(currentQuestionIndex);
+  renderNavigation();
+  updateNavButtons();
+}
+
+function renderQuestion(index) {
+  const q = shuffledQuestions[index];
+  quiz.innerHTML = `
+    <div class="question-box">
+      <h3>Soal ${index + 1} dari ${shuffledQuestions.length}</h3>
+      <p><strong>${q.question}</strong></p>
+      <form>
+        ${q.options
+          .map((opt, i) => `
+          <label class="option">
+            <input type="radio" name="option" value="${opt}" onchange="selectAnswer(${index}, '${opt}')" 
+            ${answers[index] === opt ? "checked" : ""} />
+            ${String.fromCharCode(97 + i)}. ${opt}
+          </label>
+        `).join("")}
+      </form>
+    </div>
+  `;
+  highlightCurrent(index);
+}
+
+function renderNavigation() {
+  const nav = document.getElementById("navigation");
+  nav.innerHTML = "";
+  for (let i = 0; i < shuffledQuestions.length; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i + 1;
+    btn.className = answers[i] ? "answered" : "";
+    if (i === currentQuestionIndex) btn.classList.add("active");
+    btn.onclick = () => {
+      currentQuestionIndex = i;
+      renderQuestion(i);
+      updateNavButtons();
+    };
+    nav.appendChild(btn);
+  }
+}
+
+function highlightCurrent(index) {
+  const navButtons = document.getElementById("navigation").children;
+  for (let i = 0; i < navButtons.length; i++) {
+    navButtons[i].classList.remove("active");
+    if (answers[i]) {
+      navButtons[i].classList.add("answered");
+    } else {
+      navButtons[i].classList.remove("answered");
+    }
+  }
+  if (navButtons[index]) {
+    navButtons[index].classList.add("active");
+  }
+}
+
+function selectAnswer(qIndex, selected) {
+  answers[qIndex] = selected;
+  highlightCurrent(qIndex);
+
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+}
+
+nextButton.addEventListener("click", () => {
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
+
+prevButton.addEventListener("click", () => {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
+
+function updateNavButtons() {
+  prevButton.disabled = currentQuestionIndex === 0;
+  nextButton.disabled = currentQuestionIndex === shuffledQuestions.length - 1;
+}
+
+function submitQuiz() {
+  let score = 0;
+  const result = document.getElementById("result");
+  result.innerHTML = "<h2>Hasil Kuis:</h2>";
+  result.innerHTML += `<a href="index.html" class="btn">HOME</a>`;
+  
+  shuffledQuestions.forEach((q, i) => {
+    const isCorrect = answers[i] === q.answer;
+    if (isCorrect) score++;
+
+    result.innerHTML += `
+      <div class="question-box">
+        <p><strong>${i + 1}. ${q.question}</strong></p>
+        <p>Jawaban Anda: <span class="${isCorrect ? "correct" : "incorrect"}">${answers[i] || "Belum dijawab"}</span></p>
+        <p>Jawaban Benar: <span class="correct">${q.answer}</span></p>
+      </div>
+    `;
+  });
+
+  result.innerHTML = `<h2>Nilai Anda: ${score * 10}</h2>` + result.innerHTML;
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("navigation").style.display = "none";
+  document.querySelector(".submit-btn").style.display = "none";
+  document.querySelector(".nav-btns").style.display = "none";
+}
+
+window.onload = initQuiz;
+  </script>
+</body>
+</html>
