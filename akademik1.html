@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Latihan Soal Antonim Sinonim</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eaf4ff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .question-box {
+      margin-bottom: 20px;
+    }
+
+    .question-box h3 {
+      margin-top: 0;
+      color: #007acc;
+    }
+
+    .question-box p {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .question-box form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      margin-top: 10px;
+    }
+
+    .option {
+      padding: 10px;
+      border: 2px solid #007acc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .option:hover {
+      background: #e0f0ff;
+    }
+
+    .option input {
+      margin-right: 10px;
+    }
+
+    .navigation {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .navigation button {
+      padding: 10px 15px;
+      background-color: #ccc;
+      color: black;
+      border: 2px solid #999;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .navigation button.answered {
+      background-color: #4CAF50; /* hijau */
+      color: white;
+      border-color: #3e8e41;
+    }
+
+    .navigation button.active {
+      outline: 2px solid #007acc;
+    }
+
+    .result {
+      margin-top: 30px;
+    }
+
+    .result h2 {
+      color: #007acc;
+    }
+
+    .result .question-box {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+    }
+
+    .submit-btn {
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background-color: darkgreen;
+    }
+    .btn{
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .nav-btn{
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="quiz"></div>
+    <div class="nav-btn">
+      <button class="btn" id="prev-btn">Prev</button>
+      <button class="btn" id="next-btn">Next</button>
+    </div>
+    <div class="navigation" id="navigation"></div>
+    <button class="submit-btn" onclick="submitQuiz()">Selesai</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+  {
+    question: "Apa bentuk negara Indonesia menurut UUD 1945 Pasal 1 ayat (1)?",
+    options: [
+      "Negara kesatuan yang berbentuk republik",
+      "Negara federal yang berbentuk kerajaan",
+      "Negara demokrasi liberal",
+      "Negara sosialis yang berbentuk republik"
+    ],
+    answer: "Negara kesatuan yang berbentuk republik"
+  },
+  {
+    question: "Menurut UUD 1945 Pasal 1 ayat (2), kedaulatan berada di tangan siapa?",
+    options: [
+      "Presiden",
+      "Rakyat",
+      "Dewan Perwakilan Rakyat",
+      "Mahkamah Konstitusi"
+    ],
+    answer: "Rakyat"
+  },
+  {
+    question: "Pasal 1 ayat (3) UUD 1945 menyatakan bahwa negara Indonesia adalah...",
+    options: [
+      "Negara hukum",
+      "Negara adikuasa",
+      "Negara agama",
+      "Negara industri"
+    ],
+    answer: "Negara hukum"
+  },
+  {
+    question: "Siapakah pemegang kekuasaan pemerintahan menurut UUD 1945 Pasal 4 ayat (1)?",
+    options: [
+      "Presiden",
+      "DPR",
+      "MPR",
+      "Mahkamah Agung"
+    ],
+    answer: "Presiden"
+  },
+  {
+    question: "Apa tugas Presiden menurut Pasal 5 ayat (1) UUD 1945?",
+    options: [
+      "Mengajukan RUU kepada DPR",
+      "Membentuk kabinet",
+      "Menetapkan Peraturan Pemerintah",
+      "Memimpin sidang MPR"
+    ],
+    answer: "Mengajukan RUU kepada DPR"
+  },
+  {
+    question: "Pasal 5 ayat (2) UUD 1945 menyebutkan bahwa Presiden menetapkan apa?",
+    options: [
+      "Peraturan Pemerintah",
+      "Undang-undang",
+      "Peraturan Presiden",
+      "Peraturan Daerah"
+    ],
+    answer: "Peraturan Pemerintah"
+  },
+  {
+    question: "Pasal 3 UUD 1945 mengatur tentang apa?",
+    options: [
+      "Kewenangan MPR",
+      "Kekuasaan kehakiman",
+      "Hubungan pusat dan daerah",
+      "Kewenangan Presiden"
+    ],
+    answer: "Kewenangan MPR"
+  },
+  {
+    question: "Siapa yang memegang kekuasaan untuk membuat undang-undang menurut Pasal 20 UUD 1945?",
+    options: [
+      "DPR",
+      "Presiden",
+      "MPR",
+      "Mahkamah Agung"
+    ],
+    answer: "DPR"
+  },
+  {
+    question: "Menurut Pasal 2 ayat (1) UUD 1945, MPR terdiri dari?",
+    options: [
+      "Anggota DPR dan anggota DPD",
+      "Presiden dan Wakil Presiden",
+      "DPR dan Mahkamah Konstitusi",
+      "DPD dan BPK"
+    ],
+    answer: "Anggota DPR dan anggota DPD"
+  },
+  {
+    question: "Pasal 4 ayat (2) UUD 1945 menyatakan Presiden dalam menjalankan kewajibannya dibantu oleh?",
+    options: [
+      "Wakil Presiden",
+      "DPR",
+      "Mahkamah Agung",
+      "Menteri-menteri"
+    ],
+    answer: "Wakil Presiden"
+  }
+];
+
+
+let shuffledQuestions = [];
+let currentQuestionIndex = 0;
+let answers = [];
+
+const quiz = document.getElementById("quiz");
+const nextButton = document.getElementById("next-btn");
+const prevButton = document.getElementById("prev-btn");
+
+function shuffleArray(array) {
+  return array
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+}
+
+function initQuiz() {
+  shuffledQuestions = shuffleArray(originalQuestions).map(q => ({
+    ...q,
+    options: shuffleArray(q.options)
+  }));
+  answers = Array(shuffledQuestions.length).fill(null);
+  currentQuestionIndex = 0;
+  renderQuestion(currentQuestionIndex);
+  renderNavigation();
+  updateNavButtons();
+}
+
+function renderQuestion(index) {
+  const q = shuffledQuestions[index];
+  quiz.innerHTML = `
+    <div class="question-box">
+      <h3>Soal ${index + 1} dari ${shuffledQuestions.length}</h3>
+      <p><strong>${q.question}</strong></p>
+      <form>
+        ${q.options
+          .map((opt, i) => `
+          <label class="option">
+            <input type="radio" name="option" value="${opt}" onchange="selectAnswer(${index}, '${opt}')" 
+            ${answers[index] === opt ? "checked" : ""} />
+            ${String.fromCharCode(97 + i)}. ${opt}
+          </label>
+        `).join("")}
+      </form>
+    </div>
+  `;
+  highlightCurrent(index);
+}
+
+function renderNavigation() {
+  const nav = document.getElementById("navigation");
+  nav.innerHTML = "";
+  for (let i = 0; i < shuffledQuestions.length; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i + 1;
+    btn.className = answers[i] ? "answered" : "";
+    if (i === currentQuestionIndex) btn.classList.add("active");
+    btn.onclick = () => {
+      currentQuestionIndex = i;
+      renderQuestion(i);
+      updateNavButtons();
+    };
+    nav.appendChild(btn);
+  }
+}
+
+function highlightCurrent(index) {
+  const navButtons = document.getElementById("navigation").children;
+  for (let i = 0; i < navButtons.length; i++) {
+    navButtons[i].classList.remove("active");
+    if (answers[i]) {
+      navButtons[i].classList.add("answered");
+    } else {
+      navButtons[i].classList.remove("answered");
+    }
+  }
+  if (navButtons[index]) {
+    navButtons[index].classList.add("active");
+  }
+}
+
+function selectAnswer(qIndex, selected) {
+  answers[qIndex] = selected;
+  highlightCurrent(qIndex);
+
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+}
+
+nextButton.addEventListener("click", () => {
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
+
+prevButton.addEventListener("click", () => {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
+
+function updateNavButtons() {
+  prevButton.disabled = currentQuestionIndex === 0;
+  nextButton.disabled = currentQuestionIndex === shuffledQuestions.length - 1;
+}
+
+function submitQuiz() {
+  let score = 0;
+  const result = document.getElementById("result");
+  result.innerHTML = "<h2>Hasil Kuis:</h2>";
+  result.innerHTML += `<a href="index.html" class="btn">HOME</a>`;
+  
+  shuffledQuestions.forEach((q, i) => {
+    const isCorrect = answers[i] === q.answer;
+    if (isCorrect) score++;
+
+    result.innerHTML += `
+      <div class="question-box">
+        <p><strong>${i + 1}. ${q.question}</strong></p>
+        <p>Jawaban Anda: <span class="${isCorrect ? "correct" : "incorrect"}">${answers[i] || "Belum dijawab"}</span></p>
+        <p>Jawaban Benar: <span class="correct">${q.answer}</span></p>
+      </div>
+    `;
+  });
+
+  result.innerHTML = `<h2>Nilai Anda: ${score * 10}</h2>` + result.innerHTML;
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("navigation").style.display = "none";
+  document.querySelector(".submit-btn").style.display = "none";
+  document.querySelector(".nav-btns").style.display = "none";
+}
+
+window.onload = initQuiz;
+  </script>
+</body>
+</html>
