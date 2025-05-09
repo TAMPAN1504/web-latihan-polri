@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tenses Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f5fa;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .quiz-container {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    .question {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #e0e0e0;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .options button:hover {
+      background: #d0d0d0;
+    }
+    .options button.correct {
+      background-color: #a5d6a7;
+    }
+    .options button.incorrect {
+      background-color: #ef9a9a;
+    }
+    .feedback {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="question" id="question">Rumus berikut ini milik tense apa?<br><strong>Subject + had been + Verb-ing</strong></div>
+    <div class="options">
+      <button onclick="checkAnswer(this, false)">a) Past Perfect</button>
+      <button onclick="checkAnswer(this, false)">b) Present Perfect Continuous</button>
+      <button onclick="checkAnswer(this, true)">c) Past Perfect Continuous</button>
+      <button onclick="checkAnswer(this, false)">d) Future Perfect</button>
+    </div>
+    <div class="feedback" id="feedback"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + had been + Verb-ing",
+        correctAnswer: "Past Perfect Continuous",
+        options: [
+          { text: "a) Past Perfect", isCorrect: false },
+          { text: "b) Present Perfect Continuous", isCorrect: false },
+          { text: "c) Past Perfect Continuous", isCorrect: true },
+          { text: "d) Future Perfect", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + Verb 2",
+        correctAnswer: "Simple Past",
+        options: [
+          { text: "a) Present Perfect", isCorrect: false },
+          { text: "b) Simple Past", isCorrect: true },
+          { text: "c) Past Continuous", isCorrect: false },
+          { text: "d) Future Continuous", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + was/were + Verb-ing",
+        correctAnswer: "Past Continuous",
+        options: [
+          { text: "a) Past Continuous", isCorrect: true },
+          { text: "b) Simple Past", isCorrect: false },
+          { text: "c) Future Perfect", isCorrect: false },
+          { text: "d) Present Continuous", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + will + Verb 1",
+        correctAnswer: "Simple Future",
+        options: [
+          { text: "a) Simple Future", isCorrect: true },
+          { text: "b) Present Continuous", isCorrect: false },
+          { text: "c) Future Perfect", isCorrect: false },
+          { text: "d) Past Perfect Continuous", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + had + Verb 3",
+        correctAnswer: "Past Perfect",
+        options: [
+          { text: "a) Future Perfect", isCorrect: false },
+          { text: "b) Past Perfect", isCorrect: true },
+          { text: "c) Present Perfect Continuous", isCorrect: false },
+          { text: "d) Future Continuous", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + will have + Verb 3",
+        correctAnswer: "Future Perfect",
+        options: [
+          { text: "a) Future Perfect", isCorrect: true },
+          { text: "b) Present Perfect", isCorrect: false },
+          { text: "c) Past Continuous", isCorrect: false },
+          { text: "d) Past Perfect Continuous", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + will be + Verb-ing",
+        correctAnswer: "Future Continuous",
+        options: [
+          { text: "a) Future Continuous", isCorrect: true },
+          { text: "b) Present Perfect", isCorrect: false },
+          { text: "c) Past Perfect", isCorrect: false },
+          { text: "d) Simple Past", isCorrect: false }
+        ]
+      },
+      {
+        question: "Rumus berikut ini milik tense apa? Subject + had been + Verb-ing",
+        correctAnswer: "Past Perfect Continuous",
+        options: [
+          { text: "a) Simple Past", isCorrect: false },
+          { text: "b) Present Continuous", isCorrect: false },
+          { text: "c) Past Perfect Continuous", isCorrect: true },
+          { text: "d) Future Perfect Continuous", isCorrect: false }
+        ]
+      },
+    ];
+
+    let currentQuestionIndex = 0;
+
+    function showQuestion(index) {
+      // Reset button colors before displaying new question
+      const buttons = document.querySelectorAll('.options button');
+      buttons.forEach(btn => {
+        btn.classList.remove('correct', 'incorrect');
+      });
+
+      const questionObj = questions[index];
+      document.getElementById('question').innerHTML = questionObj.question;
+      questionObj.options.forEach((option, i) => {
+        buttons[i].innerHTML = option.text;
+        buttons[i].disabled = false; // Re-enable buttons for new question
+        buttons[i].onclick = function() {
+          checkAnswer(this, option.isCorrect, index);
+        };
+      });
+    }
+
+    function checkAnswer(button, isCorrect, questionIndex) {
+      const buttons = document.querySelectorAll('.options button');
+      buttons.forEach(btn => btn.disabled = true);
+      const correctButton = [...buttons].find(btn => btn.innerHTML.includes(questions[questionIndex].correctAnswer));
+      
+      if (isCorrect) {
+        button.classList.add('correct');
+        document.getElementById('feedback').textContent = "✅ Benar!";
+      } else {
+        button.classList.add('incorrect');
+        document.getElementById('feedback').textContent = `❌ Ups, ini jawaban yang benar: ${questions[questionIndex].correctAnswer}`;
+        correctButton.classList.add('correct');
+      }
+
+      if (questionIndex + 1 < questions.length) {
+        setTimeout(() => {
+          currentQuestionIndex++;
+          showQuestion(currentQuestionIndex);
+          document.getElementById('feedback').textContent = '';
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          document.getElementById('feedback').textContent = "✅ Kuis selesai!";
+        }, 1500);
+      }
+    }
+
+    showQuestion(currentQuestionIndex);
+  </script>
+</body>
+</html>

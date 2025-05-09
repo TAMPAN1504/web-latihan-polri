@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Latihan Soal Antonim Sinonim</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #eaf4ff;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .question-box {
+      margin-bottom: 20px;
+    }
+
+    .question-box h3 {
+      margin-top: 0;
+      color: #007acc;
+    }
+
+    .question-box p {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .question-box form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 80%;
+      margin-top: 10px;
+    }
+
+    .option {
+      padding: 10px;
+      border: 2px solid #007acc;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .option:hover {
+      background: #e0f0ff;
+    }
+
+    .option input {
+      margin-right: 10px;
+    }
+
+    .navigation {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .navigation button {
+      padding: 10px 15px;
+      background-color: #ccc;
+      color: black;
+      border: 2px solid #999;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .navigation button.answered {
+      background-color: #4CAF50; /* hijau */
+      color: white;
+      border-color: #3e8e41;
+    }
+
+    .navigation button.active {
+      outline: 2px solid #007acc;
+    }
+
+    .result {
+      margin-top: 30px;
+    }
+
+    .result h2 {
+      color: #007acc;
+    }
+
+    .result .question-box {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .correct {
+      color: green;
+    }
+
+    .incorrect {
+      color: red;
+    }
+
+    .submit-btn {
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      background-color: darkgreen;
+    }
+    .btn{
+      background-color: green;
+      padding: 10px 20px;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    .nav-btn{
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="quiz"></div>
+    <div class="nav-btn">
+      <button class="btn" id="prev-btn">Prev</button>
+      <button class="btn" id="next-btn">Next</button>
+    </div>
+    <div class="navigation" id="navigation"></div>
+    <button class="submit-btn" onclick="submitQuiz()">Selesai</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    const originalQuestions = [
+    {
+    "question": "Pertumbuhan dan perkembangan manusia dimulai sejak saat...",
+    "options": ["Pembuahan", "Janin", "Kelahiran", "Bayi", "Balita"],
+    "answer": "Pembuahan"
+  },
+  {
+    "question": "Proses pertemuan dan penggabungan antara sel sperma dan sel telur disebut...",
+    "options": ["Implantasi", "Fertilisasi", "Ovulasi", "Fermentasi", "Hubungan Seksual"],
+    "answer": "Fertilisasi"
+  },
+  {
+    "question": "Penggabungan antara sel sperma dan sel telur akan menghasilkan?..",
+    "options": ["Embrio", "Janin", "Zigot", "Fetus", "Ovulasi"],
+    "answer": "Zigot"
+  },
+  {
+    "question": "Istilah lain dari janin yang telah melewati fase embrio adalah?",
+    "options": ["Ovulasi", "Janin", "Zigot", "Fetus", "Embrio"],
+    "answer": "Fetus"
+  },
+  {
+    "question": "Organ yang menyediakan nutrisi dan oksigen untuk janin selama dalam kandungan adalah?",
+    "options": ["Ovarium", "Plasenta", "Uterus", "Tuba Falopi", "Zigot"],
+    "answer": "Plasenta"
+  },
+  {
+    "question": "Berikut ini merupakan ciri-ciri pubertas pada Perempuan, kecuali ?",
+    "options": ["Panggul Melebar", "Tumbuhnya rambut pada ketiak dan kemaluan", "Tumbuhnya rambut disekitar area wajah", "Payudara membesar", "Menstruasi"],
+    "answer": "Tumbuhnya rambut disekitar area wajah"
+  },
+  {
+    "question": "Pada awalnya bumi terdiri atas satu benua maha luas yang dinamakan?",
+    "options": ["Pangea", "Tetis", "Samudra", "Laurasia", "Gondwana"],
+    "answer": "Pangea"
+  },
+  {
+    "question": "Benua biru merupakan julukan untuk benua?",
+    "options": ["Eropa", "Antartika", "Asia", "Afrika", "Australia"],
+    "answer": "Eropa"
+  },
+  {
+    "question": "Benua terbesar kedua setelah Benua Asia adalah?.",
+    "options": ["Eropa", "Antartika", "Amerika Utara", "Afrika", "Australia"],
+    "answer": "Afrika"
+  },
+  {
+    "question": "Satu gross terdiri dari?. Lusin",
+    "options": ["1 Lusin", "12 Lusin", "24 Lusin", "6 lusin", "36 Lusin"],
+    "answer": "12 Lusin"
+  },
+  {
+    "question": "Tahun yang memiliki jumlah hari 366, dan terjadi setiap 4 tahun sekali, disebut tahun?.",
+    "options": ["Hijriyah", "Masehi", "Kabisat", "Dekade", "Dasawarsa"],
+    "answer": "Kabisat"
+  },
+  {
+    "question": "Negara Matahari Terbit merupakan julukan untuk negara?",
+    "options": ["Jepang", "Irak", "Saudi Arabia", "China", "Indonesia"],
+    "answer": "Jepang"
+  },
+  {
+    "question": "Hari kesaktian Pancasila diperingati pada tanggal?.",
+    "options": ["17 Agustus", "18 Agustus", "1 juni", "1 Oktober", "28 Oktober"],
+    "answer": "1 Oktober"
+  },
+  {
+    "question": "Proses perubahan wujud suatu benda padat menjadi benda gas tanpa melalui proses cair disebut dengan ?.",
+    "options": ["Mencair", "Menguap", "Membeku", "Melebur", "Menyublim"],
+    "answer": "Menyublim"
+  },
+  {
+    "question": "Berikut ini laut yang tidak berbatasan dengan Benua Asia adalah?",
+    "options": ["Laut Aral", "Laut Mati", "Laut Kaspi", "Laut Hitam", "Laut Merah"],
+    "answer": "Laut Mati"
+  },
+  {
+    "question": "Perkembangbiakan dengan cara bertelur disebut?.",
+    "options": ["Vivipar", "Spora", "Ovipar", "Tunas", "Ovovivipar"],
+    "answer": "Ovipar"
+  },
+  {
+    "question": "Tumbuhan cocor bebek berkembang biak dengan cara?.",
+    "options": ["Tunas Daun", "Umbi Batang", "Umbi Lapis", "Stek", "Okulasi"],
+    "answer": "Tunas Daun"
+  },
+  {
+    "question": "Ibu Kota Negara Yunani adalah?",
+    "options": ["Vatikan", "Tallinu", "Roma", "Athena", "Berlin"],
+    "answer": "Athena"
+  },
+  {
+    "question": "Pekan Olahraga Nasional (PON) pertama kali dilaksanakan di?.",
+    "options": ["Jakarta", "Makassar", "Surakarta", "Medan", "Surabaya"],
+    "answer": "Surakarta"
+  },
+  {
+    "question": "J-League Division 1 merupakan nama liga sepak bola yang berasal dari negara?",
+    "options": ["Jerman", "Jepang", "Jamaica", "Guinea", "Georgia"],
+    "answer": "Jepang"
+  },
+  {
+    "question": "Mata uang Negara Vietnam adalah?",
+    "options": ["Bath", "Dollar", "Samoni", "Yen", "Dong"],
+    "answer": "Dong"
+  },
+  {
+    "question": "Penemu lampu bohlam yang berasal dari Amerika Serikat adalah?..",
+    "options": ["Thomas Alfa Edison", "Irving Langmuir", "Thomas Shelby", "Nicolaus Otto", "Thomas Lamp"],
+    "answer": "Thomas Alfa Edison"
+  },
+  {
+    "question": "Canberra merupakan ibu kota dari negara?",
+    "options": ["Belgia", "Singapura", "Jerman", "Amerika", "Australia"],
+    "answer": "Australia"
+  },
+  {
+    "question": "Peso merupakan mata uang negara?",
+    "options": ["Belgia", "Singapura", "Jerman", "Filipina", "Amerika"],
+    "answer": "Filipina"
+  },
+  {
+    "question": "Benteng kastela terletak di provinsi?",
+    "options": ["Maluku", "Sulawesi Selatan", "Sulawesi Tenggara", "Maluku Utara", "Kalimantan Barat"],
+    "answer": "Maluku Utara"
+  },
+  {
+    question: "Wakil presiden Indonesia saat ini adalah?",
+    options: ["Makruf Amin", "Gibran Rakabuming Raka", "Jussuf Kalla", "Boediono", "Soeharto"],
+    answer: "Gibran Rakabuming Raka"
+  },
+  {
+    question: "Organisasi Internasional yang mengumumkan pandemi covid-19 pada tahun 2020 adalah?",
+    options: ["IMF", "WHO", "ILO", "UNESCO", "UNICEF"],
+    answer: "WHO"
+  },
+  {
+    question: "Presiden Amerika Serikat yang terpilih pada pemilihan umum tahun 2020 adalah?",
+    options: ["Donald Trump", "Bernie Sanders", "Joe Bidden", "Kamala Harris", "Barack Obama"],
+    answer: "Joe Bidden"
+  },
+  {
+    question: "Negara yang menjadi tuan rumah Olimpiade Musim Panas 2021 adalah?",
+    options: ["Brazil", "Perancis", "Australia", "Jerman", "Jepang"],
+    answer: "Jepang"
+  },
+  {
+    question: "Nama vaksin covid-19 pertama yang mendapatkan persetujuan penggunaan darurat dari WHO adalah?",
+    options: ["Pfizer - BioNTech", "Moderna", "Astra Zeneca", "Sinovac", "Booster"],
+    answer: "Pfizer - BioNTech"
+  },
+  {
+    question: "Kesepakatan Internasional yang ditandatangani oleh lebih dari 190 Negara untuk mengatasi perubahan iklim adalah?",
+    options: ["Protokol Kyoto", "Perjanjian Paris", "Kesempatan Montral", "Deklarasi Meja Bundar", "Deklarasi Rio"],
+    answer: "Perjanjian Paris"
+  },
+  {
+    question: "Nama CEO Tesla Inc. yang juga dikenal sebagai SpaceX adalah?",
+    options: ["Jeff Bezos", "Bill Gates", "Elon Musk", "Mark Zuckerberg", "Thomas Edison"],
+    answer: "Elon Musk"
+  },
+  {
+    question: "Aplikasi media sosial yang sangat popular di kalangan remaja dan dikenal dengan video pendeknya adalah?",
+    options: ["Twitter", "Instagram", "TikTok", "Snapchat", "Facebook"],
+    answer: "TikTok"
+  },
+  {
+    question: "Negara yang memenangkan Piala Dunia FIFA 2018 adalah?",
+    options: ["Brazil", "Jerman", "Spanyol", "Perancis", "Argentina"],
+    answer: "Perancis"
+  },
+  {
+    question: "Cryptocurrency pertama yang diciptakan pada tahun 2009 adalah?",
+    options: ["Ethereum", "Bitcoin", "Ripple", "Litecoin", "Saham"],
+    answer: "Bitcoin"
+  },
+  {
+    question: "Organisasi yang memenangkan penghargaan Nobel Perdamaian pada tahun 2020 adalah...",
+    options: ["Organisasi Kesehatan Dunia (WHO)", "Greta Thunberd", "Komite Palang Merah Internasional (ICRC)", "ASEAN", "Program Pangan Dunia"],
+    answer: "Program Pangan Dunia"
+  },
+  {
+    question: "Tokoh yang dikenal sebagai 'Bapak Sepak Bola Indonesia' adalah?",
+    options: ["Bambang Pamungkas", "Soeratin Sosrosoegondo", "Ricky Yacobi", "Rudi Hartanto", "Erick Tohir"],
+    answer: "Soeratin Sosrosoegondo"
+  },
+  {
+    question: "Tim pesepakbola yang memenangkan Liga 1 Indonesia musim 2019 adalah?",
+    options: ["Persija Jakarta", "Bali United", "Arema FC", "PSM Makassar", "Sriwijaya FC"],
+    answer: "Bali United"
+  },
+  {
+    question: "Tumbuhan yang bermanfaat sebagai obat tradisional dapat menyembuhkan berbagai penyakit berhubungan dengan pernafasan khususnya sesak nafas adalah tumbuhan",
+    options: ["Daun Salam", "Kumis Kucing", "Lidah Buaya", "Kunyit", "Bunga Kecubung"],
+    answer: "Bunga Kecubung"
+  },
+  {
+    question: "Presiden pertama Republik Indonesia adalah?",
+    options: ["Jokowidodo", "Susilo Bambang Yudoyono", "B.J. Habibie", "Soeharto", "Soekarno"],
+    answer: "Soekarno"
+  },
+  {
+    question: "Candi Borobudur terletak di provinsi?",
+    options: ["Jawa Tengah", "Jawa Timur", "Bali", "Yogyakarta", "Jawa Barat"],
+    answer: "Jawa Tengah"
+  },
+  {
+    question: "Negara yang memiliki penduduk paling banyak di dunia adalah?",
+    options: ["India", "Amerika Serikat", "China", "Indonesia", "Saudi Arabia"],
+    answer: "China"
+  },
+  {
+    question: "Simbol Kimia untuk air adalah?",
+    options: ["O2", "CO2", "H2O", "NaCL", "Br"],
+    answer: "H2O"
+  },
+  {
+    question: "Jumlah provinsi di Indonesia pada tahun 2021 adalah?",
+    options: ["32", "33", "34", "35", "36"],
+    answer: "34"
+  },
+  {
+    question: "Nama Sungai terpanjang di dunia yaitu?",
+    options: ["Sungai Niil", "Sungai Misisipi", "Sungai Amazon", "Sunagai Kapuas", "Sungai Yangtze"],
+    answer: "Sungai Niil"
+  },
+  {
+    question: "Pemain sepak bola yang mencetak gol terbanyak sepanjang masa di tim nasional Indonesia adalah?",
+    options: ["Boaz Solossa", "Bambang Pamungkas", "Kurniawan Dwi Yulianto", "Cristian Gonzales", "Irfan Bachdim"],
+    answer: "Bambang Pamungkas"
+  },
+  {
+    question: "Stadion yang menjadi markas tim nasional Indonesia adalah?",
+    options: ["Stadion Glora Bung Karno", "Stadion Utama Gelora Bung Karno", "Stadion Mandala", "Stadion Maguworahardjo", "Stadion Gelora Delta Siduarjo"],
+    answer: "Stadion Utama Gelora Bung Karno"
+  },
+  {
+    question: "Menara Eiffel berada di Negara?",
+    options: ["Inggris", "Italia", "Jerman", "Spanyol", "Perancis"],
+    answer: "Perancis"
+  },
+  {
+    question: "Perjanjian yang mengakhiri Perang Dunia I adalah perjanjian?",
+    options: ["Versailles", "Paris", "Postdam", "Geneva", "Meja Bundar"],
+    answer: "Versailles"
+  },
+  {
+    question: "Penulis novel 'Harry Potter' adalah?",
+    options: ["J.R.R. Tolkien", "J.K. Rowling", "George R.R. Martin", "Stephen King", "J.K Tolkien"],
+    answer: "J.K. Rowling"
+  }
+];
+
+
+let shuffledQuestions = [];
+let currentQuestionIndex = 0;
+let answers = [];
+
+const quiz = document.getElementById("quiz");
+const nextButton = document.getElementById("next-btn");
+const prevButton = document.getElementById("prev-btn");
+
+function shuffleArray(array) {
+  return array
+    .map(item => ({ item, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ item }) => item);
+}
+
+function initQuiz() {
+  shuffledQuestions = shuffleArray(originalQuestions).map(q => ({
+    ...q,
+    options: shuffleArray(q.options)
+  }));
+  answers = Array(shuffledQuestions.length).fill(null);
+  currentQuestionIndex = 0;
+  renderQuestion(currentQuestionIndex);
+  renderNavigation();
+  updateNavButtons();
+}
+
+function renderQuestion(index) {
+  const q = shuffledQuestions[index];
+  quiz.innerHTML = `
+    <div class="question-box">
+      <h3>Soal ${index + 1} dari ${shuffledQuestions.length}</h3>
+      <p><strong>${q.question}</strong></p>
+      <form>
+        ${q.options
+          .map((opt, i) => `
+          <label class="option">
+            <input type="radio" name="option" value="${opt}" onchange="selectAnswer(${index}, '${opt}')" 
+            ${answers[index] === opt ? "checked" : ""} />
+            ${String.fromCharCode(97 + i)}. ${opt}
+          </label>
+        `).join("")}
+      </form>
+    </div>
+  `;
+  highlightCurrent(index);
+}
+
+function renderNavigation() {
+  const nav = document.getElementById("navigation");
+  nav.innerHTML = "";
+  for (let i = 0; i < shuffledQuestions.length; i++) {
+    const btn = document.createElement("button");
+    btn.innerText = i + 1;
+    btn.className = answers[i] ? "answered" : "";
+    if (i === currentQuestionIndex) btn.classList.add("active");
+    btn.onclick = () => {
+      currentQuestionIndex = i;
+      renderQuestion(i);
+      updateNavButtons();
+    };
+    nav.appendChild(btn);
+  }
+}
+
+function highlightCurrent(index) {
+  const navButtons = document.getElementById("navigation").children;
+  for (let i = 0; i < navButtons.length; i++) {
+    navButtons[i].classList.remove("active");
+    if (answers[i]) {
+      navButtons[i].classList.add("answered");
+    } else {
+      navButtons[i].classList.remove("answered");
+    }
+  }
+  if (navButtons[index]) {
+    navButtons[index].classList.add("active");
+  }
+}
+
+function selectAnswer(qIndex, selected) {
+  answers[qIndex] = selected;
+  highlightCurrent(qIndex);
+
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+}
+
+nextButton.addEventListener("click", () => {
+  if (currentQuestionIndex < shuffledQuestions.length - 1) {
+    currentQuestionIndex++;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
+
+prevButton.addEventListener("click", () => {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    renderQuestion(currentQuestionIndex);
+    updateNavButtons();
+  }
+});
+
+function updateNavButtons() {
+  prevButton.disabled = currentQuestionIndex === 0;
+  nextButton.disabled = currentQuestionIndex === shuffledQuestions.length - 1;
+}
+
+function submitQuiz() {
+  let score = 0;
+  const result = document.getElementById("result");
+  result.innerHTML = "<h2>Hasil Kuis:</h2>";
+  result.innerHTML += `<a href="index.html" class="btn">HOME</a>`;
+  
+  shuffledQuestions.forEach((q, i) => {
+    const isCorrect = answers[i] === q.answer;
+    if (isCorrect) score++;
+
+    result.innerHTML += `
+      <div class="question-box">
+        <p><strong>${i + 1}. ${q.question}</strong></p>
+        <p>Jawaban Anda: <span class="${isCorrect ? "correct" : "incorrect"}">${answers[i] || "Belum dijawab"}</span></p>
+        <p>Jawaban Benar: <span class="correct">${q.answer}</span></p>
+      </div>
+    `;
+  });
+
+  result.innerHTML = `<h2>Nilai Anda: ${score * 10}</h2>` + result.innerHTML;
+  document.getElementById("quiz").style.display = "none";
+  document.getElementById("navigation").style.display = "none";
+  document.querySelector(".submit-btn").style.display = "none";
+  document.querySelector(".nav-btns").style.display = "none";
+}
+
+window.onload = initQuiz;
+  </script>
+</body>
+</html>
